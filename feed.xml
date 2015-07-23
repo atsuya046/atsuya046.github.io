@@ -15,23 +15,47 @@ http://atsuya046.github.io/
 This blog is awesome
 </description>
 <lastBuildDate>
-Tue, 21 Jul 2015 09:48:38 +0900
+Thu, 23 Jul 2015 21:11:55 +0900
 </lastBuildDate>
 <item>
 <guid>
-http://atsuya046.github.io/posts/2014-03-10-first-post.html
+http://atsuya046.github.io/posts/2015-07-23-webpack-getstarted.html
 </guid>
 <link>
-http://atsuya046.github.io/posts/2014-03-10-first-post.html
+http://atsuya046.github.io/posts/2015-07-23-webpack-getstarted.html
 </link>
 <title>
-A Post
+Webpackを使ってみる
 </title>
 <description>
-&lt;h3&gt;&lt;a name=&quot;this&amp;#95;is&amp;#95;test&quot;&gt;&lt;/a&gt;This is Test&lt;/h3&gt;&lt;p&gt;this is test&lt;/p&gt;
+&lt;h4&gt;&lt;a name=&quot;webpack&quot;&gt;&lt;/a&gt;Webpack&lt;/h4&gt;&lt;p&gt;&lt;a href='https://github.com/webpack/webpack Webpack'&gt;Webpack&lt;/a&gt; はJSモジュールの依存性管理ツール.&lt;/p&gt;&lt;p&gt;NodeJSのように ```require()``` 使ってmoduleをロードすることができる.&lt;/p&gt;&lt;p&gt;今回はWebpackを使ってHello Worldをコンソールに出力するモジュールをロードしてみる.&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;webpackのインストール&quot;&gt;&lt;/a&gt;Webpackのインストール&lt;/h4&gt;&lt;pre&gt;&lt;code&gt;npm install webpack -g
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;&lt;a name=&quot;ソースコード&quot;&gt;&lt;/a&gt;ソースコード&lt;/h4&gt;greeter.js&lt;pre&gt;&lt;code class=&quot;|javascript|&quot;&gt;function Greeter&amp;#40;&amp;#41; {
+  this.greet = &amp;quot;Hello world&amp;quot;;
+
+  this.exec = function&amp;#40;&amp;#41; {
+    console.log&amp;#40;this.greet&amp;#41;;
+  };
+}
+
+module.exports = Greeter;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;main.js&lt;pre&gt;&lt;code class=&quot;|javscript|&quot;&gt;&amp;#40;function&amp;#40;&amp;#41;{
+  var G = require&amp;#40;'./greeter.js'&amp;#41;;
+  var greeter = new G&amp;#40;&amp;#41;;
+  greeter.exec&amp;#40;&amp;#41;;
+}&amp;#41;&amp;#40;&amp;#41;;
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;build&quot;&gt;&lt;/a&gt;Build&lt;/h4&gt;以下のコマンドでmain.jsにgreeter.jsを読み込ませたJSファイルを出力する.&lt;pre&gt;&lt;code&gt;webpack ./main.js bundle.js
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;以下のようにHTMLファイルからbuild成果物のbundle.jsを読み込ませる.&lt;/p&gt;&lt;p&gt;index.html&lt;pre&gt;&lt;code class=&quot;|html|&quot;&gt;&amp;lt;html&amp;gt;
+  &amp;lt;head&amp;gt;
+    &amp;lt;meta charset=&amp;quot;utf-8&amp;quot;&amp;gt;
+  &amp;lt;/head&amp;gt;
+  &amp;lt;body&amp;gt;
+    &amp;lt;script type=&amp;quot;text/javascript&amp;quot; src=&amp;quot;bundle.js&amp;quot; charset=&amp;quot;utf-8&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
+  &amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;ブラウザで確認するとコンソールにHello Worldが出力される.&lt;/p&gt;
 </description>
 <pubDate>
-Mon, 10 Mar 2014 00:00:00 +0900
+Thu, 23 Jul 2015 00:00:00 +0900
 </pubDate>
 </item>
 </channel>
