@@ -15,7 +15,7 @@ http://atsuya046.github.io/
 This blog is awesome
 </description>
 <lastBuildDate>
-Thu, 23 Jul 2015 21:11:55 +0900
+Thu, 23 Jul 2015 21:15:32 +0900
 </lastBuildDate>
 <item>
 <guid>
@@ -28,7 +28,7 @@ http://atsuya046.github.io/posts/2015-07-23-webpack-getstarted.html
 Webpackを使ってみる
 </title>
 <description>
-&lt;h4&gt;&lt;a name=&quot;webpack&quot;&gt;&lt;/a&gt;Webpack&lt;/h4&gt;&lt;p&gt;&lt;a href='https://github.com/webpack/webpack Webpack'&gt;Webpack&lt;/a&gt; はJSモジュールの依存性管理ツール.&lt;/p&gt;&lt;p&gt;NodeJSのように ```require()``` 使ってmoduleをロードすることができる.&lt;/p&gt;&lt;p&gt;今回はWebpackを使ってHello Worldをコンソールに出力するモジュールをロードしてみる.&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;webpackのインストール&quot;&gt;&lt;/a&gt;Webpackのインストール&lt;/h4&gt;&lt;pre&gt;&lt;code&gt;npm install webpack -g
+&lt;h4&gt;&lt;a name=&quot;webpack&quot;&gt;&lt;/a&gt;Webpack&lt;/h4&gt;&lt;p&gt;&lt;a href='https://github.com/webpack/webpack Webpack'&gt;Webpack&lt;/a&gt; はJSモジュールの依存性管理ツール.&lt;/p&gt;&lt;p&gt;NodeJSのように require() 使ってmoduleをロードすることができる.&lt;/p&gt;&lt;p&gt;今回はWebpackを使ってHello Worldをコンソールに出力するモジュールをロードしてみる.&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;webpackのインストール&quot;&gt;&lt;/a&gt;Webpackのインストール&lt;/h4&gt;&lt;pre&gt;&lt;code&gt;npm install webpack -g
 &lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;&lt;a name=&quot;ソースコード&quot;&gt;&lt;/a&gt;ソースコード&lt;/h4&gt;greeter.js&lt;pre&gt;&lt;code class=&quot;|javascript|&quot;&gt;function Greeter&amp;#40;&amp;#41; {
   this.greet = &amp;quot;Hello world&amp;quot;;
 
