@@ -15,8 +15,153 @@ http://atsuya046.github.io/
 This blog is awesome
 </description>
 <lastBuildDate>
-Wed, 12 Aug 2015 12:47:32 +0900
+Sun, 23 Aug 2015 21:55:10 +0900
 </lastBuildDate>
+<item>
+<guid>
+http://atsuya046.github.io/posts/2015-08-23-euler1-with-testing.html
+</guid>
+<link>
+http://atsuya046.github.io/posts/2015-08-23-euler1-with-testing.html
+</link>
+<title>
+ScalaでProject Eulerを解きながらテストを書いてみる
+</title>
+<description>
+&lt;p&gt;ここではプロジェクトオイラーの問1をTDDを使って解いてみる&lt;/p&gt;&lt;p&gt;&lt;a href='http://odz.sakura.ne.jp/projecteuler/'&gt;http://odz.sakura.ne.jp/projecteuler/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;（問題を解くことが目的ではなくプロダクトコードを作成しつつテストコードを書きながら再利用可能なコードにすることを目的とする）&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;0.&amp;#95;sbtプロジェクトの構成&quot;&gt;&lt;/a&gt;0. sbtプロジェクトの構成&lt;/h3&gt;buildツール: sbtテストフレームワーク: specs2&lt;p&gt;以下の構成でディレクトリを作成&lt;pre&gt;&lt;code&gt;&amp;#40;root&amp;#41;
+  /src
+    /main
+      /scala
+    /test
+      /scala
+  build.sbt
+ &lt;/code&gt;&lt;/pre&gt; build.sbtの内容は以下のとおり&lt;/p&gt;&lt;pre&gt;&lt;code&gt;name := &amp;quot;projectEuler&amp;quot;
+
+version := &amp;quot;1.0&amp;quot;
+
+libraryDependencies ++= Seq&amp;#40;&amp;quot;org.specs2&amp;quot; %% &amp;quot;specs2-core&amp;quot; % &amp;quot;3.6.4&amp;quot; % &amp;quot;test&amp;quot;&amp;#41;
+
+scalacOptions in Test ++= Seq&amp;#40;&amp;quot;-Yrangepos&amp;quot;&amp;#41;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;1.&amp;#95;コードを書く&quot;&gt;&lt;/a&gt;1. コードを書く&lt;/h3&gt;プロジェクトオイラーの問1は以下のとおり&lt;p&gt;&lt;a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201'&gt;http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201&lt;/a&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; 10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;おそらくこの問題を解くために必要な処理は以下のようになるだろう&lt;ul&gt;&lt;li&gt;1000未満の自然数を用意する&lt;/li&gt;&lt;li&gt;3の倍数の自然数(3で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;5の倍数の自然数(5で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;抽出した自然数を足し合わせる&lt;/li&gt;&lt;/ul&gt;&lt;h4&gt;&lt;a name=&quot;1.1&amp;#95;スケルトン作成&quot;&gt;&lt;/a&gt;1.1 スケルトン作成&lt;/h4&gt;ひとまず書き始めてみる.&lt;/p&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;case class Problem1&amp;#40;&amp;#41; {
+
+  def select&amp;#40;list: List&amp;#41;: List = {
+    list
+  }
+  def sumUp&amp;#40;list: List&amp;#41;: Int = {
+    0
+  }
+}
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;一旦、プロダクトコードのsumUp()に対してテストを以下のように作ってみる.&lt;/p&gt;&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;package examples
+
+import com.example.nobu.Problem1
+import org.specs2.&amp;#95;
+
+class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;quot;
+   sumuped number will be 0                             $e1
+                                                     &amp;quot;&amp;quot;&amp;quot;
+  def e1 = Problem1&amp;#40;&amp;#41;.sumUp&amp;#40;List&amp;#40;1, 2, 3&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;0&amp;#41;
+}
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;コンソールで sbt test と入力するとテストが走ってテストが成功する.&lt;/p&gt;&lt;p&gt;が、まだこれではなにも機能しない. 徐々に肉付けしていく.&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;1.2&amp;#95;肉付け&quot;&gt;&lt;/a&gt;1.2 肉付け&lt;/h4&gt;&lt;h6&gt;&lt;a name=&quot;sumup()を'引数のlistを足し合わせた数を返す'関数にする&quot;&gt;&lt;/a&gt;sumUp()を'引数のListを足し合わせた数を返す'関数にする&lt;/h6&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;  def sumUp&amp;#40;list: List&amp;#91;Int&amp;#93;&amp;#41;: Int = {
+    list.foldLeft&amp;#40;0&amp;#41;&amp;#40;&amp;#40;a, x&amp;#41; =&amp;gt; a + x&amp;#41;
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;quot;
+   sumuped number will be 6                             $e1
+                                                     &amp;quot;&amp;quot;&amp;quot;
+  def e1 = Problem1&amp;#40;&amp;#41;.sumUp&amp;#40;List&amp;#40;1, 2, 3&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;1+2+3&amp;#41;
+}
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;h5&gt;&lt;a name=&quot;select()を'引数のlistから「3で割り切れる」もしくは「5で割り切れる」自然数を選択してそのlistを返す'関数にする&quot;&gt;&lt;/a&gt;select()を'引数のListから「3で割り切れる」もしくは「5で割り切れる」自然数を選択してそのListを返す'関数にする&lt;/h5&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;  def select&amp;#40;list: List&amp;#91;Int&amp;#93;&amp;#41;: List&amp;#91;Int&amp;#93; = {
+    list.filter&amp;#40;x =&amp;gt; x%3 == 0 || x%5 == 0&amp;#41;
+  }
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;quot;
+   sumuped number will be 0                             $e1
+   selected number will be multiple of 3 or 5           $e2
+
+                                                     &amp;quot;&amp;quot;&amp;quot;
+
+  def e1 = Problem1&amp;#40;&amp;#41;.sumUp&amp;#40;List&amp;#40;1, 2, 3&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;1+2+3&amp;#41;
+  def e2 = Problem1&amp;#40;&amp;#41;.select&amp;#40;List&amp;#40;3,4,5&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;List&amp;#40;3,5&amp;#41;&amp;#41;
+}
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;1.3&amp;#95;結合&quot;&gt;&lt;/a&gt;1.3 結合&lt;/h4&gt;これまでは関数ごとにテストしていたので、それぞれの関数を結合してテストしてみる.問題文で'10未満の自然数の範囲では答えは23になる'ということがわかっているので、それをテストに使う&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;  def is = s2&amp;quot;&amp;quot;&amp;quot;
+  ...
+    List of lt 10 will be 23                             $e4
+  ...
+  &amp;quot;&amp;quot;&amp;quot;
+
+  val pb = Problem1&amp;#40;&amp;#41;
+  def e4 = pb.sumUp&amp;#40;
+    pb.select&amp;#40;&amp;#40;1 to 9&amp;#41;.toList&amp;#41;
+  &amp;#41; must&amp;#95;===&amp;#40;23&amp;#41;
+ &lt;/code&gt;&lt;/pre&gt; このテストが通ればおそらく問1の答えは導けるだろう.&lt;/p&gt;&lt;p&gt;sbt consoleで試してみる&lt;pre&gt;&lt;code&gt;scala&amp;gt; val pb = Problem1&amp;#40;&amp;#41;
+scala&amp;gt; pb.sumUp&amp;#40;pb.select&amp;#40;pb.select&amp;#40;&amp;#40;1 to 999&amp;#41;.toList&amp;#41;&amp;#41;
+res3: Int = 233168
+ &lt;/code&gt;&lt;/pre&gt; あってる？（未確認）&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;2.&amp;#95;リファクタリング&quot;&gt;&lt;/a&gt;2. リファクタリング&lt;/h3&gt;問題を解くコードはできたとして、今度はリファクタリングをしてみる&lt;p&gt;おそらく現在のコードで一番変えた方がよさそうな部分はselect()だろう&lt;/p&gt;&lt;p&gt;今後の要求に'7の倍数も対象に'だとか'他のCollectionにも対応してほしい'とかいう要求が上がってくるかもしれない&lt;/p&gt;&lt;p&gt;それに対応できるよう、select()はListに依存せず再利用可能な関数として外部に提供し、かつテストしやすい状態へとリファクタリングする.&lt;/p&gt;&lt;p&gt;select関数はひとまずCollectionのfilter関数で使えるよう、Intを引数にBooleanを返す関数に変更する&lt;/p&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;  def select&amp;#40;x: Int&amp;#41;: Boolean = {
+    x%3 == 0 || x%5 == 0
+  }
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;package examples
+
+import com.example.nobu.Problem1
+import org.specs2.&amp;#95;
+
+class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;quot;
+   sumuped number will be 6                             $e1
+   List of lt 10 will be 23                             $e3
+
+   1 will not be selected                               $e3
+   3 will be selected                                   $e4
+   5 will be selected                                   $e5
+                                                     &amp;quot;&amp;quot;&amp;quot;
+  val pb = Problem1&amp;#40;&amp;#41;
+
+  def e1 = pb.sumUp&amp;#40;List&amp;#40;1, 2, 3&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;1+2+3&amp;#41;
+  def e3 = pb.sumUp&amp;#40;&amp;#40;1 to 9&amp;#41;.toList.filter&amp;#40;pb.select&amp;#40;&amp;#95;&amp;#41;&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;23&amp;#41;
+
+  def e4 = pb.select&amp;#40;1&amp;#41; must&amp;#95;===&amp;#40;false&amp;#41;
+  def e5 = pb.select&amp;#40;3&amp;#41; must&amp;#95;===&amp;#40;true&amp;#41;
+  def e6 = pb.select&amp;#40;5&amp;#41; must&amp;#95;===&amp;#40;true&amp;#41;
+}
+ &lt;/code&gt;&lt;/pre&gt; テストコードもListの知識がいらなくなったのでシンプルになった！&lt;/p&gt;&lt;p&gt;せっかくなので、sumUp関数もいろんなCollectionに対応できるようにしておく&lt;/p&gt;&lt;p&gt;ここではCollectionのfoldLeft関数で使えるような状態に変更する&lt;/p&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;  def sumUp&amp;#40;a: Int, b: Int&amp;#41;: Int = {
+    a + b
+  }
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;package examples
+
+import com.example.nobu.Problem1
+import org.specs2.&amp;#95;
+
+class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;quot;
+   sumuped number will be 6                             $e1
+   List of lt 10 will be 23                             $e3
+
+   1 will not be selected                               $e4
+   3 will be selected                                   $e5
+   5 will be selected                                   $e6
+
+   vector resouces will work                            $e7
+                                                     &amp;quot;&amp;quot;&amp;quot;
+  val pb = Problem1&amp;#40;&amp;#41;
+
+  def e1 = List&amp;#40;1, 2, 3&amp;#41;.foldLeft&amp;#40;0&amp;#41;&amp;#40;&amp;#40;a, b&amp;#41; =&amp;gt; pb.sumUp&amp;#40;a, b&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;1+2+3&amp;#41;
+  def e3 = &amp;#40;1 to 9&amp;#41;.toList
+    .filter&amp;#40;pb.select&amp;#40;&amp;#95;&amp;#41;&amp;#41;
+    .foldLeft&amp;#40;0&amp;#41;&amp;#40;&amp;#40;&amp;#40;a, b&amp;#41; =&amp;gt; pb.sumUp&amp;#40;a, b&amp;#41;&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;23&amp;#41;
+
+  def e4 = pb.select&amp;#40;1&amp;#41; must&amp;#95;===&amp;#40;false&amp;#41;
+  def e5 = pb.select&amp;#40;3&amp;#41; must&amp;#95;===&amp;#40;true&amp;#41;
+  def e6 = pb.select&amp;#40;5&amp;#41; must&amp;#95;===&amp;#40;true&amp;#41;
+
+  def e7 = Vector&amp;#40;1, 2, 3&amp;#41;.foldLeft&amp;#40;0&amp;#41;&amp;#40;&amp;#40;a, b&amp;#41; =&amp;gt; pb.sumUp&amp;#40;a, b&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;1+2+3&amp;#41;
+}
+ &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;pre&gt;&lt;code&gt;$ sbt consoele
+scala&amp;gt; val pb = Problem1&amp;#40;&amp;#41;
+scala&amp;gt; &amp;#40;1 to 999&amp;#41;.toList.filter&amp;#40;pb.select&amp;#40;&amp;#95;&amp;#41;&amp;#41;.foldLeft&amp;#40;0&amp;#41;&amp;#40;&amp;#40;a, b&amp;#41; =&amp;gt; pb.sumUp&amp;#40;a, b&amp;#41;&amp;#41;
+res2: Int = 233168
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;3&lt;/p&gt;&lt;p&gt;参考&lt;/p&gt;&lt;p&gt;ScalaのString Interpolationという機能を使って、文字列に値を埋め込むことができる模様&lt;pre&gt;&lt;code&gt;s2&amp;quot;&amp;quot;&amp;quot; It is hoge $e1 &amp;quot;&amp;quot;&amp;quot;
+def e1 = &amp;quot;hoge&amp;quot; must &amp;quot;hoge&amp;quot;
+ &lt;/code&gt;&lt;/pre&gt; &lt;a href='http://d.hatena.ne.jp/xuwei/20130614/1371182008'&gt;http://d.hatena.ne.jp/xuwei/20130614/1371182008&lt;/a&gt;&lt;/p&gt;
+</description>
+<pubDate>
+Sun, 23 Aug 2015 00:00:00 +0900
+</pubDate>
+</item>
 <item>
 <guid>
 http://atsuya046.github.io/posts/2015-07-23-webpack-getstarted.html
