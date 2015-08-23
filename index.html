@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.indigo-pink.min.css">
     <script src="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/styles/default.min.css">
     <link href="css/screen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -18,7 +18,7 @@
     <span class="blog-title mdl-layout-title"><a class="mdl-color-text--grey-300" href="/">NOB LAB</a></span>
     <div class="sub-title mdl-color-text--grey-300">
       <small>Web系フリーエンジニアの技術ブログ<br></small>
-      <small>Clojure, Scala, JavaScript, Ruby, Haskell</small>
+      <small>Clojure, Scala, JavaScript, Ruby, Haskellなど.</small>
     </div>
     <nav class="mdl-navigation">
       <a class="mdl-navigation__link mdl-color-text--grey-300" href="/archives.html">Archives</a>
@@ -26,6 +26,19 @@
     </nav>
 
     <footer class="mdl-mega-footer">
+      <div style="text-align: center;">
+        <span>
+          <a href="https://github.com/atsuya046" class="mdl-color-text--grey-300" style="margin: 12px; text-decoration: none;">
+            <i class="fa fa-facebook fa-2x"></i>
+          </a>
+          <a href="https://www.facebook.com/nobuya.oshiro" class="mdl-color-text--grey-300" style="margin: 12px; text-decoration: none;">
+            <i class="fa fa-github fa-2x"></i>
+          </a>
+          <a href="https://twitter.com/atsuya046" class="mdl-color-text--grey-300" style="margin: 12px; text-decoration: none;">
+            <i class="fa fa-twitter fa-2x"></i>
+          </a>
+        </span>
+      </div>
       <div class="mdl-mega-footer--middle-section">
         <h5><p style="text-align: center;">Copyright &copy; 2014 BLOGAWESOME<br>Powered by <a href="http://cryogenweb.org">Cryogen</a></p></h5>
       </div>
@@ -58,7 +71,7 @@
 </div>
 <div>
     
-    <p>ここではプロジェクトオイラーの問1をTDDを使って解いてみる</p><p><a href='http://odz.sakura.ne.jp/projecteuler/'>http://odz.sakura.ne.jp/projecteuler/</a></p><p>（問題を解くことが目的ではなくプロダクトコードを作成しつつテストコードを書きながら再利用可能なコードにすることを目的とする）</p><h3><a name="0.&#95;sbtプロジェクトの構成"></a>0. sbtプロジェクトの構成</h3>buildツール: sbtテストフレームワーク: specs2<p>以下の構成でディレクトリを作成<pre><code>&#40;root&#41;
+    <p>ここではプロジェクトオイラーの問1をTDDを使って解いてみる</p><p><a href='http://odz.sakura.ne.jp/projecteuler/'>http://odz.sakura.ne.jp/projecteuler/</a></p><p>（問題を解くことが目的ではなくプロダクトコードを作成しつつテストコードを書きながら再利用可能なコードにすることを目的とする）</p><h3><a name="1.&#95;sbtプロジェクトの構成"></a>1. sbtプロジェクトの構成</h3>buildツール: sbtテストフレームワーク: specs2<p>以下の構成でディレクトリを作成<pre><code>&#40;root&#41;
   /src
     /main
       /scala
@@ -72,7 +85,7 @@ version := &quot;1.0&quot;
 libraryDependencies ++= Seq&#40;&quot;org.specs2&quot; %% &quot;specs2-core&quot; % &quot;3.6.4&quot; % &quot;test&quot;&#41;
 
 scalacOptions in Test ++= Seq&#40;&quot;-Yrangepos&quot;&#41;
-</code></pre><p>IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！</p><h3><a name="1.&#95;コードを書く"></a>1. コードを書く</h3>プロジェクトオイラーの問1は以下のとおり<p><a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201'>http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201</a></p><blockquote><p> 10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. </p></blockquote><p>おそらくこの問題を解くために必要な処理は以下のようになるだろう<ul><li>1000未満の自然数を用意する</li><li>3の倍数の自然数(3で割り切れる自然数)を抽出する</li><li>5の倍数の自然数(5で割り切れる自然数)を抽出する</li><li>抽出した自然数を足し合わせる</li></ul><h4><a name="1.1&#95;スケルトン作成"></a>1.1 スケルトン作成</h4>ひとまず書き始めてみる.</p><p>Problem1.scala<pre><code>case class Problem1&#40;&#41; {
+</code></pre><p>IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！</p><h3><a name="2.&#95;コードを書く"></a>2. コードを書く</h3>プロジェクトオイラーの問1は以下のとおり<p><a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201'>http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201</a></p><blockquote><p> 10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. </p></blockquote><p>おそらくこの問題を解くために必要な処理は以下のようになるだろう<ul><li>1000未満の自然数を用意する</li><li>3の倍数の自然数(3で割り切れる自然数)を抽出する</li><li>5の倍数の自然数(5で割り切れる自然数)を抽出する</li><li>抽出した自然数を足し合わせる</li></ul><h4><a name="2.1&#95;スケルトン作成"></a>2.1 スケルトン作成</h4>ひとまず書き始めてみる.</p><p>Problem1.scala<pre><code>case class Problem1&#40;&#41; {
 
   def select&#40;list: List&#41;: List = {
     list
@@ -91,7 +104,7 @@ class Problem1Spec extends Specification { def is = s2&quot;&quot;&quot;
                                                      &quot;&quot;&quot;
   def e1 = Problem1&#40;&#41;.sumUp&#40;List&#40;1, 2, 3&#41;&#41; must&#95;===&#40;0&#41;
 }
- </code></pre></p><p>コンソールで sbt test と入力するとテストが走ってテストが成功する.</p><p>が、まだこれではなにも機能しない. 徐々に肉付けしていく.</p><h4><a name="1.2&#95;肉付け"></a>1.2 肉付け</h4><h6><a name="sumup()を'引数のlistを足し合わせた数を返す'関数にする"></a>sumUp()を'引数のListを足し合わせた数を返す'関数にする</h6>Problem1.scala<pre><code>  def sumUp&#40;list: List&#91;Int&#93;&#41;: Int = {
+ </code></pre></p><p>コンソールで sbt test と入力するとテストが走ってテストが成功する.</p><p>が、まだこれではなにも機能しない. 徐々に肉付けしていく.</p><h4><a name="2.2&#95;肉付け"></a>2.2 肉付け</h4><h6><a name="sumup()を'引数のlistを足し合わせた数を返す'関数にする"></a>sumUp()を'引数のListを足し合わせた数を返す'関数にする</h6>Problem1.scala<pre><code>  def sumUp&#40;list: List&#91;Int&#93;&#41;: Int = {
     list.foldLeft&#40;0&#41;&#40;&#40;a, x&#41; =&gt; a + x&#41;
   }
 </code></pre><p>Problem1Spec.scala<pre><code>class Problem1Spec extends Specification { def is = s2&quot;&quot;&quot;
@@ -111,7 +124,7 @@ class Problem1Spec extends Specification { def is = s2&quot;&quot;&quot;
   def e1 = Problem1&#40;&#41;.sumUp&#40;List&#40;1, 2, 3&#41;&#41; must&#95;===&#40;1+2+3&#41;
   def e2 = Problem1&#40;&#41;.select&#40;List&#40;3,4,5&#41;&#41; must&#95;===&#40;List&#40;3,5&#41;&#41;
 }
- </code></pre></p><h4><a name="1.3&#95;結合"></a>1.3 結合</h4>これまでは関数ごとにテストしていたので、それぞれの関数を結合してテストしてみる.問題文で'10未満の自然数の範囲では答えは23になる'ということがわかっているので、それをテストに使う<p>Problem1Spec.scala<pre><code>  def is = s2&quot;&quot;&quot;
+ </code></pre></p><h4><a name="2.3&#95;結合"></a>2.3 結合</h4>これまでは関数ごとにテストしていたので、それぞれの関数を結合してテストしてみる.問題文で'10未満の自然数の範囲では答えは23になる'ということがわかっているので、それをテストに使う<p>Problem1Spec.scala<pre><code>  def is = s2&quot;&quot;&quot;
   ...
     List of lt 10 will be 23                             $e4
   ...
@@ -124,7 +137,7 @@ class Problem1Spec extends Specification { def is = s2&quot;&quot;&quot;
  </code></pre> このテストが通ればおそらく問1の答えは導けるだろう.</p><p>sbt consoleで試してみる<pre><code>scala&gt; val pb = Problem1&#40;&#41;
 scala&gt; pb.sumUp&#40;pb.select&#40;pb.select&#40;&#40;1 to 999&#41;.toList&#41;&#41;
 res3: Int = 233168
- </code></pre> あってる？（未確認）</p><h3><a name="2.&#95;リファクタリング"></a>2. リファクタリング</h3>問題を解くコードはできたとして、今度はリファクタリングをしてみる<p>おそらく現在のコードで一番変えた方がよさそうな部分はselect()だろう</p><p>今後の要求に'7の倍数も対象に'だとか'他のCollectionにも対応してほしい'とかいう要求が上がってくるかもしれない</p><p>それに対応できるよう、select()はListに依存せず再利用可能な関数として外部に提供し、かつテストしやすい状態へとリファクタリングする.</p><p>select関数はひとまずCollectionのfilter関数で使えるよう、Intを引数にBooleanを返す関数に変更する</p><p>Problem1.scala<pre><code>  def select&#40;x: Int&#41;: Boolean = {
+ </code></pre> あってる？（未確認）</p><h3><a name="3.&#95;リファクタリング"></a>3. リファクタリング</h3>問題を解くコードはできたとして、今度はリファクタリングをしてみる<p>おそらく現在のコードで一番変えた方がよさそうな部分はselect()だろう</p><p>今後の要求に'7の倍数も対象に'だとか'他のCollectionにも対応してほしい'とかいう要求が上がってくるかもしれない</p><p>それに対応できるよう、select()はListに依存せず再利用可能な関数として外部に提供し、かつテストしやすい状態へとリファクタリングする.</p><p>select関数はひとまずCollectionのfilter関数で使えるよう、Intを引数にBooleanを返す関数に変更する</p><p>Problem1.scala<pre><code>  def select&#40;x: Int&#41;: Boolean = {
     x%3 == 0 || x%5 == 0
   }
  </code></pre></p><p>Problem1Spec.scala<pre><code>package examples
