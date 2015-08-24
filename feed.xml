@@ -15,7 +15,7 @@ http://atsuya046.github.io/
 This blog is awesome
 </description>
 <lastBuildDate>
-Sun, 23 Aug 2015 22:22:34 +0900
+Mon, 24 Aug 2015 09:37:19 +0900
 </lastBuildDate>
 <item>
 <guid>
@@ -28,7 +28,7 @@ http://atsuya046.github.io/posts/2015-08-23-euler1-with-testing.html
 ScalaでProject Eulerを解きながらテストを書いてみる
 </title>
 <description>
-&lt;p&gt;ここではプロジェクトオイラーの問1をTDDを使って解いてみる&lt;/p&gt;&lt;p&gt;&lt;a href='http://odz.sakura.ne.jp/projecteuler/'&gt;http://odz.sakura.ne.jp/projecteuler/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;（問題を解くことが目的ではなくプロダクトコードを作成しつつテストコードを書きながら再利用可能なコードにすることを目的とする）&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;1.&amp;#95;sbtプロジェクトの構成&quot;&gt;&lt;/a&gt;1. sbtプロジェクトの構成&lt;/h3&gt;buildツール: sbtテストフレームワーク: specs2&lt;p&gt;以下の構成でディレクトリを作成&lt;pre&gt;&lt;code&gt;&amp;#40;root&amp;#41;
+&lt;p&gt;ここではプロジェクトオイラーの問1を解きつつ、テストコードを書きながら再利用性のあるコードへリファクタリングする作業を行ってみる.&lt;/p&gt;&lt;p&gt;&lt;a href='http://odz.sakura.ne.jp/projecteuler/'&gt;http://odz.sakura.ne.jp/projecteuler/&lt;/a&gt;&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;1.&amp;#95;sbtプロジェクトの構成&quot;&gt;&lt;/a&gt;1. sbtプロジェクトの構成&lt;/h3&gt;buildツール: sbtテストフレームワーク: specs2&lt;p&gt;以下の構成でディレクトリを作成&lt;pre&gt;&lt;code&gt;&amp;#40;root&amp;#41;
   /src
     /main
       /scala
@@ -42,7 +42,9 @@ version := &amp;quot;1.0&amp;quot;
 libraryDependencies ++= Seq&amp;#40;&amp;quot;org.specs2&amp;quot; %% &amp;quot;specs2-core&amp;quot; % &amp;quot;3.6.4&amp;quot; % &amp;quot;test&amp;quot;&amp;#41;
 
 scalacOptions in Test ++= Seq&amp;#40;&amp;quot;-Yrangepos&amp;quot;&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;2.&amp;#95;コードを書く&quot;&gt;&lt;/a&gt;2. コードを書く&lt;/h3&gt;プロジェクトオイラーの問1は以下のとおり&lt;p&gt;&lt;a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201'&gt;http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201&lt;/a&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt; 10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;おそらくこの問題を解くために必要な処理は以下のようになるだろう&lt;ul&gt;&lt;li&gt;1000未満の自然数を用意する&lt;/li&gt;&lt;li&gt;3の倍数の自然数(3で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;5の倍数の自然数(5で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;抽出した自然数を足し合わせる&lt;/li&gt;&lt;/ul&gt;&lt;h4&gt;&lt;a name=&quot;2.1&amp;#95;スケルトン作成&quot;&gt;&lt;/a&gt;2.1 スケルトン作成&lt;/h4&gt;ひとまず書き始めてみる.&lt;/p&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;case class Problem1&amp;#40;&amp;#41; {
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;2.&amp;#95;コードを書く&quot;&gt;&lt;/a&gt;2. コードを書く&lt;/h3&gt;プロジェクトオイラーの問1は以下のとおり&lt;p&gt;&lt;a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201'&gt;http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201&lt;/a&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;おそらくこの問題を解くために必要な処理は以下のようになるだろう&lt;ol&gt;&lt;li&gt;1000未満の自然数を用意する&lt;/li&gt;&lt;li&gt;3の倍数の自然数(3で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;5の倍数の自然数(5で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;抽出した自然数を足し合わせる&lt;/li&gt;&lt;/ol&gt;1はクライアント側で用意するとして、2, 3, 4を実現するAPIを揃えると良さそう.&lt;/p&gt;&lt;p&gt;2, 3はひとつにまとめて、(2, 3)と4の機能を持ったAPIを作っていく.&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;2.1&amp;#95;スケルトン作成&quot;&gt;&lt;/a&gt;2.1 スケルトン作成&lt;/h4&gt;ひとまず書き始めてみる.&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;package com.example.nobu
+
+case class Problem1&amp;#40;&amp;#41; {
 
   def select&amp;#40;list: List&amp;#41;: List = {
     list
@@ -75,7 +77,6 @@ class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;q
  &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;quot;
    sumuped number will be 0                             $e1
    selected number will be multiple of 3 or 5           $e2
-
                                                      &amp;quot;&amp;quot;&amp;quot;
 
   def e1 = Problem1&amp;#40;&amp;#41;.sumUp&amp;#40;List&amp;#40;1, 2, 3&amp;#41;&amp;#41; must&amp;#95;===&amp;#40;1+2+3&amp;#41;

@@ -71,7 +71,7 @@
 </div>
 <div>
     
-    <p>ここではプロジェクトオイラーの問1をTDDを使って解いてみる</p><p><a href='http://odz.sakura.ne.jp/projecteuler/'>http://odz.sakura.ne.jp/projecteuler/</a></p><p>（問題を解くことが目的ではなくプロダクトコードを作成しつつテストコードを書きながら再利用可能なコードにすることを目的とする）</p><h3><a name="1.&#95;sbtプロジェクトの構成"></a>1. sbtプロジェクトの構成</h3>buildツール: sbtテストフレームワーク: specs2<p>以下の構成でディレクトリを作成<pre><code>&#40;root&#41;
+    <p>ここではプロジェクトオイラーの問1を解きつつ、テストコードを書きながら再利用性のあるコードへリファクタリングする作業を行ってみる.</p><p><a href='http://odz.sakura.ne.jp/projecteuler/'>http://odz.sakura.ne.jp/projecteuler/</a></p><h3><a name="1.&#95;sbtプロジェクトの構成"></a>1. sbtプロジェクトの構成</h3>buildツール: sbtテストフレームワーク: specs2<p>以下の構成でディレクトリを作成<pre><code>&#40;root&#41;
   /src
     /main
       /scala
@@ -85,7 +85,9 @@ version := &quot;1.0&quot;
 libraryDependencies ++= Seq&#40;&quot;org.specs2&quot; %% &quot;specs2-core&quot; % &quot;3.6.4&quot; % &quot;test&quot;&#41;
 
 scalacOptions in Test ++= Seq&#40;&quot;-Yrangepos&quot;&#41;
-</code></pre><p>IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！</p><h3><a name="2.&#95;コードを書く"></a>2. コードを書く</h3>プロジェクトオイラーの問1は以下のとおり<p><a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201'>http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201</a></p><blockquote><p> 10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. </p></blockquote><p>おそらくこの問題を解くために必要な処理は以下のようになるだろう<ul><li>1000未満の自然数を用意する</li><li>3の倍数の自然数(3で割り切れる自然数)を抽出する</li><li>5の倍数の自然数(5で割り切れる自然数)を抽出する</li><li>抽出した自然数を足し合わせる</li></ul><h4><a name="2.1&#95;スケルトン作成"></a>2.1 スケルトン作成</h4>ひとまず書き始めてみる.</p><p>Problem1.scala<pre><code>case class Problem1&#40;&#41; {
+</code></pre><p>IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！</p><h3><a name="2.&#95;コードを書く"></a>2. コードを書く</h3>プロジェクトオイラーの問1は以下のとおり<p><a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201'>http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201</a></p><blockquote><p>10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. </p></blockquote><p>おそらくこの問題を解くために必要な処理は以下のようになるだろう<ol><li>1000未満の自然数を用意する</li><li>3の倍数の自然数(3で割り切れる自然数)を抽出する</li><li>5の倍数の自然数(5で割り切れる自然数)を抽出する</li><li>抽出した自然数を足し合わせる</li></ol>1はクライアント側で用意するとして、2, 3, 4を実現するAPIを揃えると良さそう.</p><p>2, 3はひとつにまとめて、(2, 3)と4の機能を持ったAPIを作っていく.</p><h4><a name="2.1&#95;スケルトン作成"></a>2.1 スケルトン作成</h4>ひとまず書き始めてみる.<p>Problem1.scala<pre><code>package com.example.nobu
+
+case class Problem1&#40;&#41; {
 
   def select&#40;list: List&#41;: List = {
     list
@@ -118,7 +120,6 @@ class Problem1Spec extends Specification { def is = s2&quot;&quot;&quot;
  </code></pre></p><p>Problem1Spec.scala<pre><code>class Problem1Spec extends Specification { def is = s2&quot;&quot;&quot;
    sumuped number will be 0                             $e1
    selected number will be multiple of 3 or 5           $e2
-
                                                      &quot;&quot;&quot;
 
   def e1 = Problem1&#40;&#41;.sumUp&#40;List&#40;1, 2, 3&#41;&#41; must&#95;===&#40;1+2+3&#41;
