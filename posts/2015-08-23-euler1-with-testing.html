@@ -85,7 +85,7 @@ version := &quot;1.0&quot;
 libraryDependencies ++= Seq&#40;&quot;org.specs2&quot; %% &quot;specs2-core&quot; % &quot;3.6.4&quot; % &quot;test&quot;&#41;
 
 scalacOptions in Test ++= Seq&#40;&quot;-Yrangepos&quot;&#41;
-</code></pre><p>IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！</p><h3><a name="2.&#95;コードを書く"></a>2. コードを書く</h3>プロジェクトオイラーの問1は以下のとおり<p><a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201'>http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201</a></p><blockquote><p>10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. </p></blockquote><p>おそらくこの問題を解くために必要な処理は以下のようになるだろう<ol><li>1000未満の自然数を用意する</li><li>3の倍数の自然数(3で割り切れる自然数)を抽出する</li><li>5の倍数の自然数(5で割り切れる自然数)を抽出する</li><li>抽出した自然数を足し合わせる</li></ol>1はクライアント側で用意するとして、2, 3, 4を実現するAPIを揃えると良さそう.</p><p>2, 3はひとつにまとめて、(2, 3)と4の機能を持ったAPIを作っていく.</p><h4><a name="2.1&#95;スケルトン作成"></a>2.1 スケルトン作成</h4>ひとまず書き始めてみる.<p>Problem1.scala<pre><code>package com.example.nobu
+</code></pre><p>IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！</p><h3><a name="2.&#95;コードを書く"></a>2. コードを書く</h3>プロジェクトオイラーの問1は以下のとおり<p><a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201'>http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&page=Problem%201</a></p><blockquote><p>10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. </p></blockquote><p>おそらくこの問題を解くために必要な処理は以下のようになるだろう<ol><li>1000未満の自然数を用意する</li><li>3の倍数の自然数(3で割り切れる自然数)を抽出する</li><li>5の倍数の自然数(5で割り切れる自然数)を抽出する</li><li>抽出した自然数を足し合わせる</li></ol>1はクライアント側で用意するとして、今回は2, 3, 4を実現するAPIを揃える.</p><p>2, 3はひとつにまとめて、(2, 3)と4の機能を持ったAPIを作っていくことにする.</p><h4><a name="2.1&#95;スケルトン作成"></a>2.1 スケルトン作成</h4>ひとまず書き始めてみる.<p>Problem1.scala<pre><code>package com.example.nobu
 
 case class Problem1&#40;&#41; {
 
@@ -138,7 +138,7 @@ class Problem1Spec extends Specification { def is = s2&quot;&quot;&quot;
  </code></pre> このテストが通ればおそらく問1の答えは導けるだろう.</p><p>sbt consoleで試してみる<pre><code>scala&gt; val pb = Problem1&#40;&#41;
 scala&gt; pb.sumUp&#40;pb.select&#40;pb.select&#40;&#40;1 to 999&#41;.toList&#41;&#41;
 res3: Int = 233168
- </code></pre> あってる？（未確認）</p><h3><a name="3.&#95;リファクタリング"></a>3. リファクタリング</h3>問題を解くコードはできたとして、今度はリファクタリングをしてみる<p>おそらく現在のコードで一番変えた方がよさそうな部分はselect()だろう</p><p>今後の要求に'7の倍数も対象に'だとか'他のCollectionにも対応してほしい'とかいう要求が上がってくるかもしれない</p><p>それに対応できるよう、select()はListに依存せず再利用可能な関数として外部に提供し、かつテストしやすい状態へとリファクタリングする.</p><p>select関数はひとまずCollectionのfilter関数で使えるよう、Intを引数にBooleanを返す関数に変更する</p><p>Problem1.scala<pre><code>  def select&#40;x: Int&#41;: Boolean = {
+ </code></pre> あってる？（未確認）</p><h3><a name="3.&#95;リファクタリング"></a>3. リファクタリング</h3>問題を解くコードはできたとして、今度はリファクタリングをしてみる.<p>現状のコードはListにしか対応していないので、List以外のCollectionでも使えるようにしておいたほうが良さそう.</p><p>また、select()関数のテストが引数に渡すListを用意する必要があるのと、テスト結果がListに包まれていてテストしたい本質的な部分がぼやけてしまっているのでこれも解決しておきたい.</p><p>select関数はひとまずCollectionのfilter関数で使えるよう、Intを引数にBooleanを返す関数に変更する.</p><p>Problem1.scala<pre><code>  def select&#40;x: Int&#41;: Boolean = {
     x%3 == 0 || x%5 == 0
   }
  </code></pre></p><p>Problem1Spec.scala<pre><code>package examples
@@ -163,7 +163,7 @@ class Problem1Spec extends Specification { def is = s2&quot;&quot;&quot;
   def e5 = pb.select&#40;3&#41; must&#95;===&#40;true&#41;
   def e6 = pb.select&#40;5&#41; must&#95;===&#40;true&#41;
 }
- </code></pre> テストコードもListの知識がいらなくなったのでシンプルになった！</p><p>せっかくなので、sumUp関数もいろんなCollectionに対応できるようにしておく</p><p>ここではCollectionのfoldLeft関数で使えるような状態に変更する</p><p>Problem1.scala<pre><code>  def sumUp&#40;a: Int, b: Int&#41;: Int = {
+ </code></pre> テストコードもListの知識がいらなくなったのでシンプルになった！</p><p>次にsumUp関数もいろんなCollectionに対応できるようにfoldLeft関数で使えるような状態に変更する.</p><p>Problem1.scala<pre><code>  def sumUp&#40;a: Int, b: Int&#41;: Int = {
     a + b
   }
  </code></pre></p><p>Problem1Spec.scala<pre><code>package examples

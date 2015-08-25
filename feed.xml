@@ -15,7 +15,7 @@ http://atsuya046.github.io/
 This blog is awesome
 </description>
 <lastBuildDate>
-Mon, 24 Aug 2015 09:37:19 +0900
+Tue, 25 Aug 2015 09:00:49 +0900
 </lastBuildDate>
 <item>
 <guid>
@@ -42,7 +42,7 @@ version := &amp;quot;1.0&amp;quot;
 libraryDependencies ++= Seq&amp;#40;&amp;quot;org.specs2&amp;quot; %% &amp;quot;specs2-core&amp;quot; % &amp;quot;3.6.4&amp;quot; % &amp;quot;test&amp;quot;&amp;#41;
 
 scalacOptions in Test ++= Seq&amp;#40;&amp;quot;-Yrangepos&amp;quot;&amp;#41;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;2.&amp;#95;コードを書く&quot;&gt;&lt;/a&gt;2. コードを書く&lt;/h3&gt;プロジェクトオイラーの問1は以下のとおり&lt;p&gt;&lt;a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201'&gt;http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201&lt;/a&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;おそらくこの問題を解くために必要な処理は以下のようになるだろう&lt;ol&gt;&lt;li&gt;1000未満の自然数を用意する&lt;/li&gt;&lt;li&gt;3の倍数の自然数(3で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;5の倍数の自然数(5で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;抽出した自然数を足し合わせる&lt;/li&gt;&lt;/ol&gt;1はクライアント側で用意するとして、2, 3, 4を実現するAPIを揃えると良さそう.&lt;/p&gt;&lt;p&gt;2, 3はひとつにまとめて、(2, 3)と4の機能を持ったAPIを作っていく.&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;2.1&amp;#95;スケルトン作成&quot;&gt;&lt;/a&gt;2.1 スケルトン作成&lt;/h4&gt;ひとまず書き始めてみる.&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;package com.example.nobu
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;IntelliJにScalaプラグインが入っていれば自動でライブラリを落としてくれる。便利！&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;2.&amp;#95;コードを書く&quot;&gt;&lt;/a&gt;2. コードを書く&lt;/h3&gt;プロジェクトオイラーの問1は以下のとおり&lt;p&gt;&lt;a href='http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201'&gt;http://odz.sakura.ne.jp/projecteuler/index.php?cmd=read&amp;page=Problem%201&lt;/a&gt;&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;10未満の自然数のうち, 3 もしくは 5 の倍数になっているものは 3, 5, 6, 9 の4つがあり, これらの合計は 23 になる. 同じようにして, 1000 未満の 3 か 5 の倍数になっている数字の合計を求めよ. &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;おそらくこの問題を解くために必要な処理は以下のようになるだろう&lt;ol&gt;&lt;li&gt;1000未満の自然数を用意する&lt;/li&gt;&lt;li&gt;3の倍数の自然数(3で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;5の倍数の自然数(5で割り切れる自然数)を抽出する&lt;/li&gt;&lt;li&gt;抽出した自然数を足し合わせる&lt;/li&gt;&lt;/ol&gt;1はクライアント側で用意するとして、今回は2, 3, 4を実現するAPIを揃える.&lt;/p&gt;&lt;p&gt;2, 3はひとつにまとめて、(2, 3)と4の機能を持ったAPIを作っていくことにする.&lt;/p&gt;&lt;h4&gt;&lt;a name=&quot;2.1&amp;#95;スケルトン作成&quot;&gt;&lt;/a&gt;2.1 スケルトン作成&lt;/h4&gt;ひとまず書き始めてみる.&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;package com.example.nobu
 
 case class Problem1&amp;#40;&amp;#41; {
 
@@ -95,7 +95,7 @@ class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;q
  &lt;/code&gt;&lt;/pre&gt; このテストが通ればおそらく問1の答えは導けるだろう.&lt;/p&gt;&lt;p&gt;sbt consoleで試してみる&lt;pre&gt;&lt;code&gt;scala&amp;gt; val pb = Problem1&amp;#40;&amp;#41;
 scala&amp;gt; pb.sumUp&amp;#40;pb.select&amp;#40;pb.select&amp;#40;&amp;#40;1 to 999&amp;#41;.toList&amp;#41;&amp;#41;
 res3: Int = 233168
- &lt;/code&gt;&lt;/pre&gt; あってる？（未確認）&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;3.&amp;#95;リファクタリング&quot;&gt;&lt;/a&gt;3. リファクタリング&lt;/h3&gt;問題を解くコードはできたとして、今度はリファクタリングをしてみる&lt;p&gt;おそらく現在のコードで一番変えた方がよさそうな部分はselect()だろう&lt;/p&gt;&lt;p&gt;今後の要求に'7の倍数も対象に'だとか'他のCollectionにも対応してほしい'とかいう要求が上がってくるかもしれない&lt;/p&gt;&lt;p&gt;それに対応できるよう、select()はListに依存せず再利用可能な関数として外部に提供し、かつテストしやすい状態へとリファクタリングする.&lt;/p&gt;&lt;p&gt;select関数はひとまずCollectionのfilter関数で使えるよう、Intを引数にBooleanを返す関数に変更する&lt;/p&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;  def select&amp;#40;x: Int&amp;#41;: Boolean = {
+ &lt;/code&gt;&lt;/pre&gt; あってる？（未確認）&lt;/p&gt;&lt;h3&gt;&lt;a name=&quot;3.&amp;#95;リファクタリング&quot;&gt;&lt;/a&gt;3. リファクタリング&lt;/h3&gt;問題を解くコードはできたとして、今度はリファクタリングをしてみる.&lt;p&gt;現状のコードはListにしか対応していないので、List以外のCollectionでも使えるようにしておいたほうが良さそう.&lt;/p&gt;&lt;p&gt;また、select()関数のテストが引数に渡すListを用意する必要があるのと、テスト結果がListに包まれていてテストしたい本質的な部分がぼやけてしまっているのでこれも解決しておきたい.&lt;/p&gt;&lt;p&gt;select関数はひとまずCollectionのfilter関数で使えるよう、Intを引数にBooleanを返す関数に変更する.&lt;/p&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;  def select&amp;#40;x: Int&amp;#41;: Boolean = {
     x%3 == 0 || x%5 == 0
   }
  &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;package examples
@@ -120,7 +120,7 @@ class Problem1Spec extends Specification { def is = s2&amp;quot;&amp;quot;&amp;q
   def e5 = pb.select&amp;#40;3&amp;#41; must&amp;#95;===&amp;#40;true&amp;#41;
   def e6 = pb.select&amp;#40;5&amp;#41; must&amp;#95;===&amp;#40;true&amp;#41;
 }
- &lt;/code&gt;&lt;/pre&gt; テストコードもListの知識がいらなくなったのでシンプルになった！&lt;/p&gt;&lt;p&gt;せっかくなので、sumUp関数もいろんなCollectionに対応できるようにしておく&lt;/p&gt;&lt;p&gt;ここではCollectionのfoldLeft関数で使えるような状態に変更する&lt;/p&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;  def sumUp&amp;#40;a: Int, b: Int&amp;#41;: Int = {
+ &lt;/code&gt;&lt;/pre&gt; テストコードもListの知識がいらなくなったのでシンプルになった！&lt;/p&gt;&lt;p&gt;次にsumUp関数もいろんなCollectionに対応できるようにfoldLeft関数で使えるような状態に変更する.&lt;/p&gt;&lt;p&gt;Problem1.scala&lt;pre&gt;&lt;code&gt;  def sumUp&amp;#40;a: Int, b: Int&amp;#41;: Int = {
     a + b
   }
  &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;&lt;p&gt;Problem1Spec.scala&lt;pre&gt;&lt;code&gt;package examples
